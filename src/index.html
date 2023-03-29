@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BRUE Demo</title>
+  </head>
+  <style>
+    input {
+      display: block;
+      margin-bottom: 12px;
+    }
+	label {
+  	 display: inline-block;
+  	 width: 300px;
+	}
+	button {
+  	 font-size: 16px;
+     padding: 5px;
+    }
+	#ds, #gRequest, #authRequestBtn, #yourSignature, #url, #saveAuthRequestReceipt {
+		display: none;
+    }
+    #rp, #sRequest, #saveRequestReceipt, #shareTokenBtn, #sRqPToken, #gAPToken, #gPT, #rpName, #receiverAP, #downloadPT, #saveRqPTokenReceipt, #downloadAPToken {
+        display: none;
+    }
+    #ap, #sAPToken, #gRqPToken, #apName, #authTokenBtn, #saveAPTokenReceipt, #receiverRP, #downloadRqPToken {
+        display: none;
+    }
+  </style>
+  <body>
+    <h1>BRUE Demo</h1>
+
+    <div>
+        <button onclick="App.runRP()">Go by Requesting Party</button>
+        <button onclick="App.runDS()">Go by Data Subject</button>
+        <button onclick="App.runAP()">Go by Authorization Party</button>
+    </div>
+
+    <div id="ds">
+        <h2>For Data Subject:</h2>
+        <button onclick="App.showRequest()">Get Request</button><br>
+
+        <div id="gRequest">
+            <h3>Get Request</h3>
+            <p>
+                <strong>Hint:</strong> data subject view request from requesting party and then authorize the request
+            </p>
+            <label for="getDataSubject">Your Signature</label>
+            <input type="text" id="getDataSubject" placeholder="data subject name"/>
+
+            <label for="getRequestingParty">Name of Requesting Party</label>
+            <input type="text" id="getRequestingParty"/>
+
+            <button onClick="App.getRequest()">View Request</button><br><br>
+
+            <input type="text" id="url" placeholder="url of authorizationParty"/><br>
+            <input type="text" id="yourSignature" placeholder="sign your name"/><br>
+            <button id="authRequestBtn" onclick="App.authRequest()">Authorize Request</button>
+            <p><input type="button" id="saveAuthRequestReceipt" value="getReceipt"/></p>
+        </div>
+    </div>
+
+    <div id="ap">
+        <h2>For Authorization Party:</h2>
+        <button onclick="App.showRqPToken()">Get Token</button><br>
+        <button onclick="App.runAPToken()">Authorize Token</button>
+
+        <div id="gRqPToken">
+            <h3>Get Token</h3>
+            <p>
+                <strong>Hint:</strong> authorization party get token from blockchain
+            </p>
+            <label for="getFrom">Name of Requesting Party</label>
+            <input type="text" id="getFrom"/>
+
+            <label for="getYourSignature">Your Signature</label>
+            <input type="text" id="getYourSignature"/>
+
+            <button onClick="App.getRqPToken()">View Token</button><br><br>
+
+            <p><input type="button" id="downloadRqPToken" value="downloadToken"/></p>
+        </div>
+
+        <div id="sAPToken">
+            <h3>Authorize Token for Requesting Party</h3>
+            <label for="upAPToken">Upload Token:</label>
+            <input type="file" id="upAPToken"/><br>
+            <button onclick="App.uploadAPToken()">Upload Token</button><br>
+
+            <p id="apToken"></p><br><br>
+
+            <input type="text" id="apName" placeholder="sign token"/><br>
+            <input type="text" id="receiverRP" placeholder="name of requesting party"/>
+            <button id="authTokenBtn" onclick="App.authToken()">Authorize Token</button><br>
+            <p><input type="button" id="saveAPTokenReceipt" value="getReceipt"/></p>
+        </div>
+
+    </div>
+
+    <div id="rp">
+        <h2>For Requesting Party:</h2>
+        <button onclick="App.runRequest()">Start Request</button><br>
+        <button onclick="App.showPT()">Get Permission Ticket</button><br>
+        <button onclick="App.runRqPToken()">Share Token</button><br>
+        <button onClick="App.showAPToken()">Get Token</button><br><br>
+
+        <div id="sRequest">
+            <h3>Send Request</h3>
+            <p>
+                <strong>Hint:</strong> requesting party send request to data subject through blockchain
+            </p>
+
+            <label for="dataSubject">Name of Data Subject:</label>
+            <input type="text" id="dataSubject" placeholder="e.g. patient" />
+
+            <label for="purpose">Purpose of Request:</label>
+            <input type="text" id="purpose" placeholder="e.g. research"/>
+
+            <label for="dateFrom">Start Date:</label>
+            <input type="text" id="dateFrom" placeholder="e.g. 20200512" />
+
+            <label for="dateTo">End Date:</label>
+            <input type="text" id="dateTo" placeholder="e.g. 20200612" />
+
+            <label for="notes">Notes:</label>
+            <input type="text" id="notes" placeholder="e.g. get EHR from hospital" />
+
+            <label for="requestingParty">Signature:</label>
+            <input type="text" id="requestingParty" placeholder="e.g. requesting party"/>
+
+            <button onclick="App.sendRequest()">Send Request</button><br>
+            <p><input type="button" id="saveRequestReceipt" value="getReceipt"/></p>
+        </div>
+
+        <div id="gPT">
+            <h3>Get Permission Ticket</h3>
+            <p>
+                <strong>Hint:</strong> requesting party get authorized permission from data subject through blockchain
+            </p>
+            <label for="getNameFrom">Name of Data Subject:</label>
+            <input type="text" id="getNameFrom" placeholder="data subject name"/>
+
+            <label for="getStatus">Status of Permission:</label>
+            <input type="text" id="getStatus" placeholder="authorized"/>
+
+            <button onclick="App.getPT()">View Permission Ticket</button><br>
+            <p><input type="button" id="downloadPT" value="downloadToken"/></p>
+        </div>
+
+        <div id="sRqPToken">
+            <h3>Share Token with Authorization Party to Verify</h3>
+            <label for="upRqPToken">Upload Token:</label>
+            <input type="file" id="upRqPToken"/><br>
+            <button onclick="App.uploadRqPToken()">Upload Token</button><br><br>
+
+            <p id="rqpToken"></p><br><br>
+
+            <input id="rpName" type="text" placeholder="your signature"/>
+            <input id="receiverAP" type="text" placeholder="authorization party name"/>
+            <button id="shareTokenBtn" onclick="App.shareToken()">Share Token</button><br>
+            <p><input type="button" id="saveRqPTokenReceipt" value="getReceipt"/></p>
+
+        </div>
+
+        <div id="gAPToken">
+            <h3>Get Authorized Token from Blockchain Network</h3>
+
+            <label for="authName">Name of Authorization Party:</label>
+            <input type="text" id="authName"/><br>
+
+            <label for="getSignature">Signature:</label>
+            <input type="text" id="getSignature" placeholder="sign your name"/>
+
+            <button onClick="App.getAPToken()">View Token</button><br>
+            <p><input type="button" id="downloadAPToken" value="downloadToken"/></p>
+        </div>
+    </div>
+    
+    <p id="status"></p>
+    
+    <p id="show"></p>
+
+    <script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/FileSaver.js/2014-11-29/FileSaver.js"></script>
+    <script type="text/javascript" src="spark-md5.js"></script>
+    
+    <script language="javascript">
+    	// save receipt for the request operation
+        var button = document.getElementById("saveRequestReceipt");
+		button.addEventListener("click",downloadReceipt,false);
+		function downloadReceipt() {  //download receipt of request service
+				let data ={
+                    dataSubject:document.getElementById("dataSubject").value,
+				    purpose:document.getElementById("purpose").value,
+                    dateFrom:document.getElementById("dateFrom").value,
+                    dateTo:document.getElementById("dateTo").value,
+					notes:document.getElementById("notes").value,
+					requestingParty:document.getElementById("requestingParty").value
+					};
+				var json = JSON.stringify(data);
+				var blob = new Blob([json], {type: "text/plain;charest=utf-8"});
+				saveAs(blob, "yourRequestReceipt.json");
+			}
+
+		//save receipt for the request authorization operation
+        var myButton = document.getElementById("saveAuthRequestReceipt");
+        myButton.addEventListener("click",getReceipt,false);
+        function getReceipt() {  //download receipt of permission ticket
+            var res = document.getElementById("show").innerHTML;
+            let data = {
+                from:document.getElementById("getDataSubject").value,
+                to:document.getElementById("getRequestingParty").value,
+                url:document.getElementById("url").value,
+                content:res
+            };
+            var json = JSON.stringify(data);
+            var blob = new Blob([json], {type: "text/plain;charest=utf-8"});
+            saveAs(blob, "yourPTReceipt.json");
+        }
+
+        //download PT
+        var buttonPT = document.getElementById("downloadPT");
+        buttonPT.addEventListener("click", downloadPT, false);
+        function downloadPT() {
+            var response = document.getElementById("show").innerHTML;
+            var str = JSON.stringify(response);
+            var blob = new Blob([str], {type: "text/plain;charest=utf-8"});
+            saveAs(blob, "yourPT.json");
+        }
+
+        //save receipt for  RqPToken sharing operation
+        var buttonRqPT = document.getElementById("saveRqPTokenReceipt");
+        buttonRqPT.addEventListener("click", saveTokenReceipt, false);
+        function saveTokenReceipt() {
+            var token = document.getElementById("rqpToken").innerHTML;
+            var signature = document.getElementById("rpName").value;
+            var to = document.getElementById("receiverAP").value;
+
+            let data ={
+                from:signature,
+                to:to,
+                token:token
+            };
+            var str = JSON.stringify(data);
+            var blob = new Blob([str], {type: "text/plain;charest=utf-8"});
+            saveAs(blob, "yourRqPTokenReceipt.json");
+        }
+
+        //download RqPToken
+        var buttonRqPToken = document.getElementById("downloadRqPToken");
+        buttonRqPToken.addEventListener("click", downloadRqPToken,false);
+        function downloadRqPToken(){
+            var token = document.getElementById("show").innerHTML;
+            var from = document.getElementById("getFrom").value;
+            var to = document.getElementById("getYourSignature").value;
+
+            let data ={
+                from:from,
+                to:to,
+                RqPToken:token
+            };
+            var str = JSON.stringify(data);
+            var blob = new Blob([str], {type: "text/plain;charest=utf-8"});
+            saveAs(blob, "yourRqPToken.json");
+        }
+
+
+        //check if broswer supports FileReader api
+		if(typeof FileReader == 'undefined') {
+            var showR = document.getElementById("show");
+            showR.innerHTML="your broswer doesn't support FileReader API";
+            document.getElementById("uploadToken").setAttribute("disabled", "disabled");
+        }
+
+        // save receipt for the APToken sharing operation
+		var btn = document.getElementById("saveAPTokenReceipt");
+		btn.addEventListener("click", saveReceipt, false);
+		function saveReceipt() { //download receipt of AP token
+				var file = document.getElementById("upAPToken").files[0];
+				var reader = new FileReader();
+				reader.readAsText(file);// read file
+				reader.onload = function() {
+					let data ={
+						to: document.getElementById("receiverRP").value,
+					    authorizationParty:document.getElementById("apName").value,
+						token:this.result
+						};
+					var receipt = JSON.stringify(data);
+					var blob = new Blob([receipt], {type: "text/plain;charest=utf-8"});
+					saveAs(blob, "yourAPTokenReceipt.json");
+					}
+			}
+
+        //download APToken
+        var buttonAPToken = document.getElementById("downloadAPToken");
+        buttonAPToken.addEventListener("click", downloadAPToken,false);
+        function downloadAPToken(){
+            var token = document.getElementById("show").innerHTML;
+            var from = document.getElementById("authName").value;
+            var to = document.getElementById("getSignature").value;
+
+            let data ={
+                from:from,
+                to:to,
+                APToken:token
+            };
+            var str = JSON.stringify(data);
+            var blob = new Blob([str], {type: "text/plain;charest=utf-8"});
+            saveAs(blob, "yourAPToken.json");
+        }
+    </script>
+  </body>
+</html>
